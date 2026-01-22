@@ -1,6 +1,7 @@
 /* =========================================
    THE ALGORITHM CARD - Main JavaScript
    Reset Agency - The Lab
+   Apple Glassmorphism + Flip Card
    ========================================= */
 
 (function () {
@@ -11,16 +12,17 @@
   // =========================================
   const CONFIG = {
     particles: {
-      desktop: 50,
-      mobile: 25,
+      desktop: 60,
+      mobile: 30,
       linksDistance: {
         desktop: 150,
         mobile: 100
       }
     },
     animation: {
-      entryDuration: 1.5,
-      entryDelay: 0.1
+      entryDuration: 1.2,
+      entryDelay: 0.2,
+      flipDuration: 0.8
     }
   };
 
@@ -29,7 +31,9 @@
   // =========================================
   const state = {
     atroposInstance: null,
-    prefersReducedMotion: false
+    prefersReducedMotion: false,
+    isFlipped: false,
+    isAnimating: false
   };
 
   // =========================================
@@ -76,7 +80,7 @@
             value: ['#6F42C1', '#00FF85', '#9B59B6', '#2ECC71']
           },
           opacity: {
-            value: { min: 0.4, max: 0.8 }
+            value: { min: 0.3, max: 0.7 }
           },
           size: {
             value: { min: 2, max: 4 }
@@ -85,12 +89,12 @@
             enable: true,
             distance: linksDistance,
             color: '#6F42C1',
-            opacity: 0.5,
+            opacity: 0.4,
             width: 1
           },
           move: {
             enable: true,
-            speed: 1,
+            speed: 1.2,
             direction: 'none',
             random: true,
             straight: false,
@@ -115,12 +119,12 @@
             grab: {
               distance: 180,
               links: {
-                opacity: 0.8,
+                opacity: 0.7,
                 color: '#00FF85'
               }
             },
             push: {
-              quantity: 2
+              quantity: 3
             }
           }
         },
@@ -152,8 +156,8 @@
     gsap.fromTo(
       elements.cardScene,
       {
-        y: 100,
-        scale: 0.8,
+        y: 80,
+        scale: 0.9,
         opacity: 0
       },
       {
@@ -181,16 +185,79 @@
     try {
       state.atroposInstance = Atropos({
         el: elements.cardAtropos,
-        activeOffset: 40,
+        activeOffset: 50,
         shadowScale: 1.05,
-        rotateXMax: 10,
-        rotateYMax: 10,
+        rotateXMax: 12,
+        rotateYMax: 12,
         shadow: true,
         highlight: true,
-        duration: 300
+        duration: 400
       });
     } catch (error) {
       console.warn('Failed to initialize Atropos:', error);
+    }
+  }
+
+  function pauseAtropos() {
+    if (state.atroposInstance) {
+      // Reset tilt to neutral position
+      const rotateEl = elements.cardAtropos.querySelector('.atropos-rotate');
+      if (rotateEl) {
+        gsap.to(rotateEl, {
+          rotateX: 0,
+          rotateY: 0,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      }
+    }
+  }
+
+  // =========================================
+  // Flip Card Animation (Apple-style)
+  // =========================================
+  function flipCard(toBack = true) {
+    if (state.isAnimating) return;
+    if (state.isFlipped === toBack) return;
+
+    state.isAnimating = true;
+
+    // Pause Atropos during flip
+    pauseAtropos();
+
+    const targetRotation = toBack ? 180 : 0;
+
+    gsap.to(elements.cardFlipper, {
+      rotateY: targetRotation,
+      duration: CONFIG.animation.flipDuration,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        state.isFlipped = toBack;
+        state.isAnimating = false;
+      }
+    });
+  }
+
+  // =========================================
+  // Event Handlers
+  // =========================================
+  function setupFlipButtons() {
+    // Flip to back (info button)
+    const flipToBackBtn = document.getElementById('flip-to-back');
+    if (flipToBackBtn) {
+      flipToBackBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        flipCard(true);
+      });
+    }
+
+    // Flip to front (close button)
+    const flipToFrontBtn = document.getElementById('flip-to-front');
+    if (flipToFrontBtn) {
+      flipToFrontBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        flipCard(false);
+      });
     }
   }
 
@@ -200,6 +267,7 @@
   function cacheElements() {
     elements.particlesBg = document.getElementById('particles-bg');
     elements.cardScene = document.getElementById('card-scene');
+    elements.cardFlipper = document.getElementById('card-flipper');
     elements.cardAtropos = document.getElementById('card-atropos');
   }
 
@@ -210,6 +278,9 @@
 
     // Initialize particles
     initParticles();
+
+    // Setup flip buttons
+    setupFlipButtons();
 
     // Start entry animation
     playEntryAnimation();
