@@ -1,0 +1,699 @@
+/* =========================================
+   THE ALGORITHM CARD - Styles
+   Reset Agency - The Lab
+   ========================================= */
+
+/* =========================================
+   CSS Variables - Design Tokens
+   ========================================= */
+:root {
+  /* Colors */
+  --bg-primary: #0A0A0A;
+  --bg-card: #1A1A1A;
+  --bg-card-back: #111111;
+  --accent-green: #00FF85;
+  --accent-purple: #6F42C1;
+  --text-primary: #FFFFFF;
+  --text-secondary: #AAAAAA;
+
+  /* Dimensions */
+  --card-width: 320px;
+  --card-height: 410px;
+  --border-radius: 16px;
+  --card-padding: 24px;
+
+  /* Typography */
+  --font-title: 'Bebas Neue', sans-serif;
+  --font-body: 'Montserrat', sans-serif;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* Desktop dimensions */
+@media (min-width: 768px) {
+  :root {
+    --card-width: 420px;
+    --card-height: 540px;
+    --card-padding: 32px;
+  }
+}
+
+/* =========================================
+   Reset & Base Styles
+   ========================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =========================================
+   Particles Background
+   ========================================= */
+#particles-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+#particles-bg.visible {
+  opacity: 1;
+}
+
+/* =========================================
+   Main Container
+   ========================================= */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+}
+
+/* =========================================
+   Card Container & Atropos
+   ========================================= */
+.card-container {
+  width: var(--card-width);
+  height: var(--card-height);
+  perspective: 1200px;
+  /* Initial state for GSAP animation */
+  opacity: 0;
+  visibility: hidden;
+}
+
+.card-container.ready {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Atropos customization */
+.atropos {
+  width: 100%;
+  height: 100%;
+}
+
+.atropos-scale,
+.atropos-rotate {
+  width: 100%;
+  height: 100%;
+}
+
+.atropos-inner {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.atropos-shadow {
+  filter: blur(50px);
+  opacity: 0.5;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 255, 133, 0.3) 0%,
+    transparent 70%
+  );
+}
+
+.atropos-highlight {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%
+  );
+}
+
+/* =========================================
+   Flip Card Structure
+   ========================================= */
+.card-flipper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+/* Front face styles */
+.card-front {
+  background: var(--bg-card);
+  box-shadow:
+    0 0 0 1px rgba(0, 255, 133, 0.1),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 60px -15px rgba(0, 255, 133, 0.15);
+}
+
+/* Back face styles */
+.card-back {
+  background: var(--bg-card-back);
+  transform: rotateY(180deg);
+  box-shadow:
+    0 0 0 1px rgba(111, 66, 193, 0.2),
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 60px -15px rgba(111, 66, 193, 0.15);
+}
+
+/* =========================================
+   Card Content - Common
+   ========================================= */
+.card-content {
+  width: 100%;
+  height: 100%;
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================
+   Card Shine Effect
+   ========================================= */
+.card-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 60%
+  );
+  pointer-events: none;
+  transform: translateX(-100%);
+  transition: transform 0.8s ease;
+  z-index: 10;
+}
+
+.card-face:hover .card-shine {
+  transform: translateX(100%);
+}
+
+/* =========================================
+   Front Face - Header
+   ========================================= */
+.card-header {
+  text-align: center;
+  margin-bottom: auto;
+}
+
+.card-title {
+  font-family: var(--font-title);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  text-shadow: 0 0 30px rgba(0, 255, 133, 0.2);
+}
+
+@media (min-width: 768px) {
+  .card-title {
+    font-size: 42px;
+    letter-spacing: 6px;
+  }
+}
+
+.card-subtitle {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .card-subtitle {
+    font-size: 14px;
+  }
+}
+
+.card-divider {
+  width: 80%;
+  height: 2px;
+  margin: 20px auto 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-green),
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 133, 0.5);
+}
+
+@media (min-width: 768px) {
+  .card-divider {
+    margin-top: 24px;
+  }
+}
+
+/* =========================================
+   Front Face - CTA Buttons
+   ========================================= */
+.card-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: auto 0;
+  padding: 16px 0;
+}
+
+@media (min-width: 768px) {
+  .card-ctas {
+    gap: 16px;
+    padding: 24px 0;
+  }
+}
+
+.cta-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .cta-button {
+    padding: 16px 24px;
+  }
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 133, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.cta-button:hover::before {
+  left: 100%;
+}
+
+.cta-button:hover {
+  border-color: var(--accent-green);
+  box-shadow:
+    0 0 20px rgba(0, 255, 133, 0.2),
+    inset 0 0 20px rgba(0, 255, 133, 0.05);
+  transform: scale(1.02);
+}
+
+.cta-button:active {
+  transform: scale(0.98);
+}
+
+.cta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--accent-green);
+  flex-shrink: 0;
+}
+
+.cta-text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  flex-grow: 1;
+}
+
+@media (min-width: 768px) {
+  .cta-text {
+    font-size: 16px;
+  }
+}
+
+.cta-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all var(--transition-normal);
+}
+
+.cta-button:hover .cta-arrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--accent-green);
+}
+
+/* =========================================
+   Front Face - Footer
+   ========================================= */
+.card-footer {
+  text-align: center;
+  margin-top: auto;
+}
+
+.footer-divider {
+  width: 60px;
+  height: 1px;
+  margin: 0 auto 12px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.powered-by {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+}
+
+@media (min-width: 768px) {
+  .powered-by {
+    font-size: 12px;
+  }
+}
+
+.the-lab {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* =========================================
+   Back Face - Logos Layout
+   ========================================= */
+.card-back-content {
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .card-back-content {
+    gap: 20px;
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Logo placeholder styles - Replace with actual images */
+.logo-placeholder {
+  width: 100px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+
+@media (min-width: 768px) {
+  .logo-placeholder {
+    width: 120px;
+    height: 48px;
+  }
+}
+
+.logo-placeholder span {
+  font-family: var(--font-title);
+  font-size: 20px;
+  letter-spacing: 4px;
+  color: var(--text-primary);
+}
+
+@media (min-width: 768px) {
+  .logo-placeholder span {
+    font-size: 24px;
+  }
+}
+
+/* When actual logos are added, use these styles */
+.logo-container img {
+  max-width: 100px;
+  height: auto;
+  filter: brightness(0) invert(1);
+}
+
+@media (min-width: 768px) {
+  .logo-container img {
+    max-width: 120px;
+  }
+}
+
+/* Plus symbol between logos */
+.plus-symbol {
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--accent-green);
+  text-shadow: 0 0 20px rgba(0, 255, 133, 0.5);
+}
+
+@media (min-width: 768px) {
+  .plus-symbol {
+    font-size: 28px;
+  }
+}
+
+/* The Lab text section */
+.thelab-container {
+  text-align: center;
+}
+
+.thelab-title {
+  font-family: var(--font-title);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 4px;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+@media (min-width: 768px) {
+  .thelab-title {
+    font-size: 24px;
+  }
+}
+
+.thelab-subtitle {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  .thelab-subtitle {
+    font-size: 12px;
+  }
+}
+
+/* =========================================
+   Flip Hint
+   ========================================= */
+.flip-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.flip-hint.visible {
+  opacity: 0.7;
+  transform: translateY(0);
+}
+
+.flip-hint-icon {
+  display: flex;
+  align-items: center;
+  animation: rotate-hint 2s ease-in-out infinite;
+}
+
+@keyframes rotate-hint {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+/* =========================================
+   Dragging States
+   ========================================= */
+.card-container.dragging {
+  cursor: grabbing;
+}
+
+.card-container.dragging .cta-button {
+  pointer-events: none;
+}
+
+/* =========================================
+   Loading State
+   ========================================= */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* =========================================
+   Selection & Focus States
+   ========================================= */
+::selection {
+  background: var(--accent-green);
+  color: var(--bg-primary);
+}
+
+.cta-button:focus {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow:
+    0 0 0 3px rgba(0, 255, 133, 0.3),
+    0 0 20px rgba(0, 255, 133, 0.2);
+}
+
+.cta-button:focus:not(:focus-visible) {
+  box-shadow:
+    0 0 20px rgba(0, 255, 133, 0.2),
+    inset 0 0 20px rgba(0, 255, 133, 0.05);
+}
+
+.cta-button:focus-visible {
+  outline: none;
+  border-color: var(--accent-green);
+  box-shadow:
+    0 0 0 3px rgba(0, 255, 133, 0.3),
+    0 0 20px rgba(0, 255, 133, 0.2);
+}
+
+/* =========================================
+   Utility Classes
+   ========================================= */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* =========================================
+   Print Styles
+   ========================================= */
+@media print {
+  #particles-bg {
+    display: none;
+  }
+
+  .card-container {
+    box-shadow: none;
+  }
+
+  .card-face {
+    box-shadow: 0 0 0 1px #000;
+  }
+}
