@@ -19,8 +19,8 @@
       }
     },
     animation: {
-      entryDuration: 1.8,
-      entryDelay: 0.2
+      entryDuration: 1.5,
+      entryDelay: 0.1
     }
   };
 
@@ -29,7 +29,6 @@
   // =========================================
   const state = {
     atroposInstance: null,
-    isAnimating: false,
     prefersReducedMotion: false
   };
 
@@ -140,8 +139,6 @@
   function playEntryAnimation() {
     const reducedMotion = state.prefersReducedMotion;
 
-    elements.cardScene.classList.add('ready');
-
     if (reducedMotion) {
       gsap.set(elements.cardScene, {
         y: 0,
@@ -152,20 +149,11 @@
       return;
     }
 
-    state.isAnimating = true;
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        state.isAnimating = false;
-        initAtropos();
-      }
-    });
-
-    tl.fromTo(
+    gsap.fromTo(
       elements.cardScene,
       {
-        y: '60vh',
-        scale: 0.6,
+        y: 100,
+        scale: 0.8,
         opacity: 0
       },
       {
@@ -173,9 +161,12 @@
         scale: 1,
         opacity: 1,
         duration: CONFIG.animation.entryDuration,
-        ease: 'power3.out'
-      },
-      CONFIG.animation.entryDelay
+        ease: 'power3.out',
+        delay: CONFIG.animation.entryDelay,
+        onComplete: () => {
+          initAtropos();
+        }
+      }
     );
   }
 
@@ -196,9 +187,7 @@
         rotateYMax: 10,
         shadow: true,
         highlight: true,
-        duration: 300,
-        // Allow clicks to pass through during tilt
-        alwaysActive: false
+        duration: 300
       });
     } catch (error) {
       console.warn('Failed to initialize Atropos:', error);
@@ -223,9 +212,7 @@
     initParticles();
 
     // Start entry animation
-    setTimeout(() => {
-      playEntryAnimation();
-    }, 100);
+    playEntryAnimation();
   }
 
   // =========================================
