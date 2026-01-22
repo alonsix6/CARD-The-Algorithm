@@ -1,22 +1,19 @@
 /* =========================================
    THE ALGORITHM CARD - Styles
    Reset Agency - The Lab
-   Light Mode with Purple/Green Gradient
    ========================================= */
 
 /* =========================================
    CSS Variables
    ========================================= */
 :root {
-  /* Colors - Light Mode */
-  --bg-primary: #F5F5FA;
+  /* Colors */
+  --bg-primary: #FFFFFF;
   --bg-card: #1A1A1A;
-  --bg-card-back: #111111;
   --accent-green: #00FF85;
   --accent-purple: #6F42C1;
   --text-primary: #FFFFFF;
   --text-secondary: #AAAAAA;
-  --text-dark: #1A1A1A;
 
   /* Dimensions */
   --card-width: 320px;
@@ -57,11 +54,9 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
-  color: var(--text-dark);
   min-height: 100vh;
   overflow-x: hidden;
   line-height: 1.5;
-  position: relative;
 }
 
 /* Reduced motion */
@@ -76,40 +71,6 @@ body {
 }
 
 /* =========================================
-   Gradient Background
-   ========================================= */
-.gradient-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -2;
-  background: linear-gradient(
-    135deg,
-    #F5F5FA 0%,
-    #E8E0F0 25%,
-    #D4F5E9 50%,
-    #E0D4F5 75%,
-    #F5F5FA 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-/* =========================================
    Particles Background
    ========================================= */
 #particles-bg {
@@ -118,7 +79,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 0;
   opacity: 0;
   transition: opacity 1s ease;
 }
@@ -138,6 +99,7 @@ body {
   min-height: 100vh;
   padding: 20px;
   position: relative;
+  z-index: 1;
 }
 
 /* =========================================
@@ -178,11 +140,11 @@ body {
 
 .atropos-shadow {
   filter: blur(30px);
-  opacity: 0.4;
+  opacity: 0.5;
   background: radial-gradient(
     ellipse at center,
     rgba(111, 66, 193, 0.4) 0%,
-    rgba(0, 255, 133, 0.2) 50%,
+    rgba(0, 255, 133, 0.3) 50%,
     transparent 70%
   );
 }
@@ -190,54 +152,25 @@ body {
 .atropos-highlight {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.3) 0%,
     transparent 50%
   );
 }
 
 /* =========================================
-   Card Inner (Flip Container)
+   Card
    ========================================= */
-.card-inner {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  /* Important: no CSS transition - GSAP handles it */
-}
-
-/* =========================================
-   Card Faces
-   ========================================= */
-.card-face {
-  position: absolute;
+.card {
   width: 100%;
   height: 100%;
   border-radius: var(--border-radius);
   overflow: hidden;
-  /* Critical for 3D flip */
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-/* Front Face */
-.card-front {
   background: var(--bg-card);
   box-shadow:
     0 25px 50px -12px rgba(0, 0, 0, 0.25),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset,
-    0 0 80px -20px rgba(111, 66, 193, 0.3),
-    0 0 80px -20px rgba(0, 255, 133, 0.2);
-}
-
-/* Back Face - rotated 180deg by default */
-.card-back {
-  background: var(--bg-card-back);
-  transform: rotateY(180deg);
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
-    0 0 80px -20px rgba(111, 66, 193, 0.3);
+    0 0 100px -20px rgba(111, 66, 193, 0.4),
+    0 0 100px -20px rgba(0, 255, 133, 0.3);
 }
 
 /* =========================================
@@ -330,7 +263,7 @@ body {
   }
 }
 
-/* CTA Spark Button */
+/* CTA Spark Button (Pill style) */
 .cta-spark {
   position: relative;
   display: grid;
@@ -341,6 +274,9 @@ body {
   transition: transform 0.2s ease;
   text-decoration: none;
   width: 100%;
+  /* Ensure clicks work */
+  cursor: pointer;
+  z-index: 1;
 }
 
 @media (min-width: 768px) {
@@ -355,6 +291,15 @@ body {
 
 .cta-spark:active {
   transform: scale(0.98);
+}
+
+.cta-spark:focus {
+  outline: none;
+}
+
+.cta-spark:focus-visible {
+  outline: 2px solid var(--accent-green);
+  outline-offset: 2px;
 }
 
 /* =========================================
@@ -392,138 +337,6 @@ body {
 }
 
 /* =========================================
-   Flip Button
-   ========================================= */
-.flip-btn {
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: var(--text-secondary);
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 10;
-}
-
-.flip-btn:hover {
-  color: var(--accent-green);
-  border-color: var(--accent-green);
-  background: rgba(0, 255, 133, 0.1);
-}
-
-.flip-btn:focus {
-  outline: none;
-}
-
-.flip-btn:focus-visible {
-  outline: 2px solid var(--accent-green);
-  outline-offset: 2px;
-}
-
-/* =========================================
-   Back Face Content
-   ========================================= */
-.card-back-content {
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-
-@media (min-width: 768px) {
-  .card-back-content {
-    gap: 18px;
-  }
-}
-
-.logo-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-text {
-  font-family: var(--font-title);
-  font-size: 26px;
-  letter-spacing: 6px;
-  color: var(--text-primary);
-}
-
-@media (min-width: 768px) {
-  .logo-text {
-    font-size: 32px;
-  }
-}
-
-.logo-img {
-  width: 100px;
-  height: auto;
-  filter: brightness(0) invert(1);
-}
-
-@media (min-width: 768px) {
-  .logo-img {
-    width: 120px;
-  }
-}
-
-.plus-symbol {
-  font-family: var(--font-body);
-  font-size: 24px;
-  font-weight: 300;
-  color: var(--accent-green);
-  text-shadow: 0 0 20px rgba(0, 255, 133, 0.6);
-}
-
-@media (min-width: 768px) {
-  .plus-symbol {
-    font-size: 28px;
-  }
-}
-
-.thelab-container {
-  text-align: center;
-}
-
-.thelab-title {
-  font-family: var(--font-title);
-  font-size: 26px;
-  font-weight: 400;
-  letter-spacing: 4px;
-  color: var(--text-primary);
-  margin-bottom: 0;
-}
-
-@media (min-width: 768px) {
-  .thelab-title {
-    font-size: 30px;
-  }
-}
-
-.thelab-subtitle {
-  font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 500;
-  color: #888;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-}
-
-@media (min-width: 768px) {
-  .thelab-subtitle {
-    font-size: 12px;
-  }
-}
-
-/* =========================================
    Selection
    ========================================= */
 ::selection {
@@ -535,7 +348,6 @@ body {
    Print
    ========================================= */
 @media print {
-  .gradient-bg,
   #particles-bg {
     display: none;
   }
