@@ -18,10 +18,6 @@
         mobile: 100
       }
     },
-    flip: {
-      autoReturnDelay: 5000,
-      duration: 0.8
-    },
     animation: {
       entryDuration: 1.8,
       entryDelay: 0.2
@@ -32,9 +28,7 @@
   // State
   // =========================================
   const state = {
-    isFlipped: false,
     atroposInstance: null,
-    autoReturnTimer: null,
     isAnimating: false,
     prefersReducedMotion: false
   };
@@ -69,7 +63,7 @@
       await tsParticles.load('particles-bg', {
         fullScreen: {
           enable: false,
-          zIndex: -1
+          zIndex: 0
         },
         particles: {
           number: {
@@ -80,11 +74,10 @@
             }
           },
           color: {
-            // Purple and green colors for light mode
             value: ['#6F42C1', '#00FF85', '#9B59B6', '#2ECC71']
           },
           opacity: {
-            value: { min: 0.3, max: 0.7 }
+            value: { min: 0.4, max: 0.8 }
           },
           size: {
             value: { min: 2, max: 4 }
@@ -92,16 +85,13 @@
           links: {
             enable: true,
             distance: linksDistance,
-            // Alternate between purple and green for links
-            color: {
-              value: ['#6F42C1', '#00FF85']
-            },
-            opacity: 0.4,
+            color: '#6F42C1',
+            opacity: 0.5,
             width: 1
           },
           move: {
             enable: true,
-            speed: 0.8,
+            speed: 1,
             direction: 'none',
             random: true,
             straight: false,
@@ -111,19 +101,27 @@
           }
         },
         interactivity: {
+          detectsOn: 'window',
           events: {
             onHover: {
-              enable: !mobile,
+              enable: true,
               mode: 'grab'
+            },
+            onClick: {
+              enable: true,
+              mode: 'push'
             }
           },
           modes: {
             grab: {
-              distance: 140,
+              distance: 180,
               links: {
-                opacity: 0.6,
-                color: '#6F42C1'
+                opacity: 0.8,
+                color: '#00FF85'
               }
+            },
+            push: {
+              quantity: 2
             }
           }
         },
@@ -142,7 +140,6 @@
   function playEntryAnimation() {
     const reducedMotion = state.prefersReducedMotion;
 
-    // Make card visible
     elements.cardScene.classList.add('ready');
 
     if (reducedMotion) {
@@ -152,27 +149,23 @@
         opacity: 1
       });
       initAtropos();
-      initFlipButtons();
       return;
     }
 
     state.isAnimating = true;
 
-    // Create timeline for entry animation
     const tl = gsap.timeline({
       onComplete: () => {
         state.isAnimating = false;
         initAtropos();
-        initFlipButtons();
       }
     });
 
-    // Animate the card scene (not the inner flip container)
     tl.fromTo(
       elements.cardScene,
       {
-        y: '80vh',
-        scale: 0.5,
+        y: '60vh',
+        scale: 0.6,
         opacity: 0
       },
       {
@@ -190,7 +183,7 @@
   // Atropos (3D Tilt)
   // =========================================
   function initAtropos() {
-    if (state.atroposInstance || state.isFlipped) {
+    if (state.atroposInstance) {
       return;
     }
 
@@ -199,119 +192,17 @@
         el: elements.cardAtropos,
         activeOffset: 40,
         shadowScale: 1.05,
-        rotateXMax: 12,
-        rotateYMax: 12,
+        rotateXMax: 10,
+        rotateYMax: 10,
         shadow: true,
         highlight: true,
-        duration: 300
+        duration: 300,
+        // Allow clicks to pass through during tilt
+        alwaysActive: false
       });
     } catch (error) {
       console.warn('Failed to initialize Atropos:', error);
     }
-  }
-
-  function destroyAtropos() {
-    if (state.atroposInstance) {
-      try {
-        state.atroposInstance.destroy();
-        state.atroposInstance = null;
-      } catch (error) {
-        console.warn('Failed to destroy Atropos:', error);
-      }
-    }
-  }
-
-  // =========================================
-  // Flip Card Functions
-  // =========================================
-  function initFlipButtons() {
-    elements.btnFlipToBack.addEventListener('click', handleFlipToBack);
-    elements.btnFlipToFront.addEventListener('click', handleFlipToFront);
-  }
-
-  function handleFlipToBack(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    flipToBack();
-  }
-
-  function handleFlipToFront(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    flipToFront();
-  }
-
-  function flipToBack() {
-    if (state.isFlipped || state.isAnimating) {
-      return;
-    }
-
-    clearAutoReturnTimer();
-    destroyAtropos();
-
-    state.isFlipped = true;
-    state.isAnimating = true;
-
-    gsap.to(elements.cardInner, {
-      rotateY: 180,
-      duration: CONFIG.flip.duration,
-      ease: 'power2.inOut',
-      transformPerspective: 1000,
-      transformOrigin: '50% 50%',
-      onComplete: () => {
-        state.isAnimating = false;
-        // Set auto-return timer
-        state.autoReturnTimer = setTimeout(() => {
-          flipToFront();
-        }, CONFIG.flip.autoReturnDelay);
-      }
-    });
-  }
-
-  function flipToFront() {
-    if (!state.isFlipped || state.isAnimating) {
-      return;
-    }
-
-    clearAutoReturnTimer();
-
-    state.isFlipped = false;
-    state.isAnimating = true;
-
-    gsap.to(elements.cardInner, {
-      rotateY: 0,
-      duration: CONFIG.flip.duration,
-      ease: 'power2.inOut',
-      transformPerspective: 1000,
-      transformOrigin: '50% 50%',
-      onComplete: () => {
-        state.isAnimating = false;
-        // Reinitialize Atropos after flip back
-        setTimeout(() => {
-          initAtropos();
-        }, 100);
-      }
-    });
-  }
-
-  function clearAutoReturnTimer() {
-    if (state.autoReturnTimer) {
-      clearTimeout(state.autoReturnTimer);
-      state.autoReturnTimer = null;
-    }
-  }
-
-  // =========================================
-  // Keyboard Navigation
-  // =========================================
-  function initKeyboardNav() {
-    document.addEventListener('keydown', (e) => {
-      // Escape returns to front
-      if (e.code === 'Escape' && state.isFlipped && !state.isAnimating) {
-        e.preventDefault();
-        flipToFront();
-      }
-    });
   }
 
   // =========================================
@@ -321,9 +212,6 @@
     elements.particlesBg = document.getElementById('particles-bg');
     elements.cardScene = document.getElementById('card-scene');
     elements.cardAtropos = document.getElementById('card-atropos');
-    elements.cardInner = document.getElementById('card-inner');
-    elements.btnFlipToBack = document.getElementById('btn-flip-to-back');
-    elements.btnFlipToFront = document.getElementById('btn-flip-to-front');
   }
 
   function init() {
@@ -334,20 +222,10 @@
     // Initialize particles
     initParticles();
 
-    // Initialize keyboard navigation
-    initKeyboardNav();
-
     // Start entry animation
     setTimeout(() => {
       playEntryAnimation();
     }, 100);
-
-    // Cleanup on visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        clearAutoReturnTimer();
-      }
-    });
   }
 
   // =========================================
