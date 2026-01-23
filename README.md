@@ -1,109 +1,96 @@
 # The Algorithm Card - NFC Landing Page
 
-Interactive 3D card landing page for The Algorithm by Reset Agency & The Lab.
+Interactive reflective card landing page for The Algorithm by Reset Agency & The Lab.
 
 ## Features
 
-- **3D Interactive Card**: Tilt effect using Atropos.js
-- **Flip Animation**: Drag/swipe to flip with resistance and auto-return
-- **Entry Animation**: Spectacular GSAP-powered entrance animation
-- **Particle Background**: Neural network-style particles with tsParticles
+- **Reflective Card Effect**: Uses webcam feed with metallic/glass SVG filters
+- **Glassmorphism Design**: Blur, noise, and sheen effects
 - **Responsive Design**: Optimized for mobile and desktop
-- **Accessibility**: Keyboard navigation and reduced motion support
+- **React + Vite**: Modern build setup
 
 ## Tech Stack
 
-- **GSAP 3.12** - Entry animations
-- **Atropos.js** - 3D tilt effect
-- **tsParticles** - Animated background
-- **Vanilla JS** - No framework dependencies
+- **React 18** - UI framework
+- **Vite** - Build tool
+- **Lucide React** - Icons
+- **SVG Filters** - Metallic displacement and specular lighting effects
 
 ## Project Structure
 
 ```
 /
-├── index.html          # Main HTML file
-├── css/
-│   └── styles.css      # All styles
-├── js/
-│   └── main.js         # JavaScript logic
-├── assets/
-│   ├── logo-reset.png  # Reset logo (to add)
-│   └── logo-wanted.png # Wanted logo (to add)
-└── netlify.toml        # Deployment config
+├── index.html              # Entry HTML
+├── package.json            # Dependencies
+├── vite.config.js          # Vite configuration
+├── netlify.toml            # Deployment config
+└── src/
+    ├── main.jsx            # React entry point
+    ├── App.jsx             # Main app component
+    ├── index.css           # Global styles
+    └── components/
+        ├── ReflectiveCard.jsx  # Main card component
+        └── ReflectiveCard.css  # Card styles
 ```
-
-## Adding Logos
-
-Replace the placeholder logos in `index.html`:
-
-1. **Reset Logo**: Place `logo-reset.png` in `/assets/`
-2. **Wanted Logo**: Place `logo-wanted.png` in `/assets/`
-
-Then update the HTML in `index.html`, replacing:
-
-```html
-<!-- Current placeholder -->
-<div class="logo-placeholder reset-logo">
-  <span>RESET</span>
-</div>
-
-<!-- Replace with -->
-<img src="assets/logo-reset.png" alt="Reset" width="120">
-```
-
-Same for Wanted logo.
-
-**Recommended logo specs:**
-- Format: PNG with transparent background
-- Color: White (#FFFFFF)
-- Width: ~120px (will scale down on mobile)
 
 ## Local Development
 
-Simply open `index.html` in a browser, or use a local server:
-
 ```bash
-# Using Python
-python -m http.server 8000
+# Install dependencies
+npm install
 
-# Using Node.js (npx)
-npx serve
+# Start dev server
+npm run dev
 
-# Using PHP
-php -S localhost:8000
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
+
+## Webcam Permission
+
+The reflective effect uses the device webcam as a background. Users will be prompted to allow camera access. The webcam feed is:
+- Blurred and filtered
+- Never recorded or transmitted
+- Only used for the visual effect
 
 ## Deployment to Netlify
 
-### Option 1: Drag & Drop
-1. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
-2. Drag the entire project folder
-
-### Option 2: Git Integration
+### Option 1: Git Integration (Recommended)
 1. Push to GitHub/GitLab
 2. Connect repository in Netlify
-3. Deploy settings are already configured in `netlify.toml`
+3. Build settings are configured in `netlify.toml`
 
-### Option 3: Netlify CLI
+### Option 2: Netlify CLI
 ```bash
 npm install -g netlify-cli
-netlify deploy --prod
+npm run build
+netlify deploy --prod --dir=dist
 ```
 
 ## CTA Links
 
 The three buttons link to:
-1. **Leer el articulo** → Notion article
-2. **Hacer el diagnostico** → Diagnostic tool
-3. **Ver la demo** → Algorithm demo
+1. **Leer el articulo** - Notion article
+2. **Hacer el diagnostico** - Diagnostic tool
+3. **Ver la demo** - Algorithm demo
 
-Update these URLs in `index.html` if needed.
+## ReflectiveCard Props
 
-## Keyboard Shortcuts
-
-- **Space / Arrow Keys**: Flip the card
-- **Tab**: Navigate between CTA buttons
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| blurStrength | number | 12 | Background blur intensity |
+| metalness | number | 1 | Metallic sheen intensity |
+| roughness | number | 0.4 | Noise texture opacity |
+| overlayColor | string | rgba(255,255,255,0.1) | Content overlay color |
+| displacementStrength | number | 20 | Distortion amount |
+| noiseScale | number | 1 | Turbulence scale |
+| specularConstant | number | 1.2 | Light reflection intensity |
+| grayscale | number | 1 | Color saturation (0-1) |
+| glassDistortion | number | 0 | Edge distortion effect |
+| color | string | white | Text color |
 
 ## Browser Support
 
@@ -111,12 +98,6 @@ Update these URLs in `index.html` if needed.
 - Firefox 78+
 - Safari 14+
 - Mobile browsers (iOS Safari, Chrome Android)
-
-## Performance Notes
-
-- Particles are reduced on mobile (30 vs 60)
-- Respects `prefers-reduced-motion` for accessibility
-- Assets loaded via CDN with preconnect hints
 
 ---
 
