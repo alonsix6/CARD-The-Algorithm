@@ -110,8 +110,12 @@ const ReflectiveCard = ({
         </defs>
       </svg>
 
-      <video ref={videoRef} autoPlay playsInline muted className="reflective-video" />
+      {/* Video wrapper for proper clipping on mobile */}
+      <div className="reflective-video-wrapper">
+        <video ref={videoRef} autoPlay playsInline muted className="reflective-video" />
+      </div>
 
+      {/* Texture layers in front of camera */}
       <div className="reflective-noise" />
       <div className="reflective-sheen" />
       <div className="reflective-border" />
