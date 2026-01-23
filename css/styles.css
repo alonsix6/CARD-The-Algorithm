@@ -1,6 +1,7 @@
 /* =========================================
    THE ALGORITHM CARD - Styles
    Reset Agency - The Lab
+   Apple Glassmorphism Design
    ========================================= */
 
 /* =========================================
@@ -9,17 +10,24 @@
 :root {
   /* Colors */
   --bg-primary: #FFFFFF;
-  --bg-card: #1A1A1A;
   --accent-green: #00FF85;
   --accent-purple: #6F42C1;
-  --text-primary: #FFFFFF;
-  --text-secondary: #AAAAAA;
+  --text-primary: #1A1A1A;
+  --text-secondary: #666666;
+  --text-light: #FFFFFF;
 
-  /* Dimensions - Credit card ratio (1.586:1) landscape */
-  --card-width: 340px;
-  --card-height: 214px;
-  --border-radius: 16px;
-  --card-padding: 20px;
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-bg-back: rgba(30, 30, 30, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+  /* Dimensions - Vertical card */
+  --card-width: 280px;
+  --card-height: 420px;
+  --border-radius: 24px;
+  --card-padding: 24px;
 
   /* Typography */
   --font-title: 'Bebas Neue', sans-serif;
@@ -28,10 +36,10 @@
 
 @media (min-width: 768px) {
   :root {
-    --card-width: 480px;
-    --card-height: 302px;
-    --card-padding: 28px;
-    --border-radius: 20px;
+    --card-width: 340px;
+    --card-height: 500px;
+    --card-padding: 32px;
+    --border-radius: 28px;
   }
 }
 
@@ -109,7 +117,25 @@ body {
 .card-scene {
   width: var(--card-width);
   height: var(--card-height);
-  perspective: 1000px;
+  perspective: 1200px;
+}
+
+/* =========================================
+   Card Flipper (3D Flip Container)
+   ========================================= */
+.card-flipper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+/* Ensure 3D context is preserved through Atropos */
+.card-flipper .atropos,
+.card-flipper .atropos-scale,
+.card-flipper .atropos-rotate,
+.card-flipper .atropos-inner {
+  transform-style: preserve-3d;
 }
 
 /* =========================================
@@ -132,12 +158,12 @@ body {
 }
 
 .atropos-shadow {
-  filter: blur(30px);
-  opacity: 0.5;
+  filter: blur(40px);
+  opacity: 0.4;
   background: radial-gradient(
     ellipse at center,
-    rgba(111, 66, 193, 0.4) 0%,
-    rgba(0, 255, 133, 0.3) 50%,
+    rgba(111, 66, 193, 0.5) 0%,
+    rgba(0, 255, 133, 0.4) 50%,
     transparent 70%
   );
 }
@@ -145,25 +171,74 @@ body {
 .atropos-highlight {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.4) 0%,
     transparent 50%
   );
 }
 
 /* =========================================
-   Card
+   Card Face (Shared Styles)
    ========================================= */
-.card {
+.card-face {
+  position: absolute;
   width: 100%;
   height: 100%;
   border-radius: var(--border-radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   overflow: hidden;
-  background: var(--bg-card);
+
+  /* Apple Glassmorphism */
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
   box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    var(--glass-shadow),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset,
-    0 0 100px -20px rgba(111, 66, 193, 0.4),
-    0 0 100px -20px rgba(0, 255, 133, 0.3);
+    0 0 80px -20px rgba(111, 66, 193, 0.3),
+    0 0 80px -20px rgba(0, 255, 133, 0.2);
+}
+
+/* Glass inner highlight effect */
+.card-face::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 100%
+  );
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  pointer-events: none;
+}
+
+/* =========================================
+   Card Front
+   ========================================= */
+.card-front {
+  z-index: 2;
+}
+
+/* =========================================
+   Card Back
+   ========================================= */
+.card-back {
+  transform: rotateY(180deg);
+  background: var(--glass-bg-back);
+  z-index: 1;
+}
+
+.card-back::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 100%
+  );
 }
 
 /* =========================================
@@ -174,73 +249,67 @@ body {
   height: 100%;
   padding: var(--card-padding);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
   position: relative;
 }
 
-@media (min-width: 768px) {
-  .card-content {
-    gap: 24px;
-  }
-}
-
 /* =========================================
-   Card Header (Left side)
+   Card Header
    ========================================= */
 .card-header {
-  flex-shrink: 0;
-  text-align: left;
+  text-align: center;
+  padding-top: 16px;
 }
 
 .card-title {
   font-family: var(--font-title);
-  font-size: 28px;
+  font-size: 36px;
   font-weight: 400;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   color: var(--text-primary);
-  margin-bottom: 2px;
-  text-shadow: 0 0 40px rgba(0, 255, 133, 0.3);
+  margin-bottom: 4px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   line-height: 1;
 }
 
 @media (min-width: 768px) {
   .card-title {
-    font-size: 38px;
-    letter-spacing: 3px;
+    font-size: 44px;
+    letter-spacing: 4px;
   }
 }
 
 .card-subtitle {
   font-family: var(--font-body);
-  font-size: 8px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--text-secondary);
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   text-transform: uppercase;
 }
 
 @media (min-width: 768px) {
   .card-subtitle {
-    font-size: 10px;
-    letter-spacing: 1.5px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
   }
 }
 
 /* =========================================
-   CTA Buttons Container (Right side)
+   CTA Buttons Container
    ========================================= */
 .card-ctas {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex: 1;
+  gap: 10px;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
   .card-ctas {
-    gap: 8px;
+    gap: 12px;
   }
 }
 
@@ -250,7 +319,7 @@ body {
   display: grid;
   overflow: hidden;
   border-radius: 50px;
-  padding: 8px 14px;
+  padding: 12px 18px;
   box-shadow: 0 1000px 0 0 hsl(0 0% 10%) inset;
   transition: transform 0.2s ease;
   text-decoration: none;
@@ -261,7 +330,7 @@ body {
 
 @media (min-width: 768px) {
   .cta-spark {
-    padding: 10px 18px;
+    padding: 14px 22px;
   }
 }
 
@@ -283,33 +352,155 @@ body {
 }
 
 /* =========================================
-   Card Footer
+   Info Button (Apple-style flip trigger)
    ========================================= */
-.card-footer {
+.info-button {
   position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.info-button:hover {
+  background: rgba(0, 0, 0, 0.25);
+  transform: scale(1.1);
+}
+
+.info-button svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-primary);
+  opacity: 0.7;
+}
+
+/* Back side info button */
+.card-back .info-button {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-back .info-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.card-back .info-button svg {
+  color: var(--text-light);
+}
+
+/* =========================================
+   Card Back Content
+   ========================================= */
+.back-content {
+  width: 100%;
+  height: 100%;
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.back-title {
+  font-family: var(--font-title);
+  font-size: 24px;
+  color: var(--text-light);
+  letter-spacing: 2px;
+  text-align: center;
 }
 
 @media (min-width: 768px) {
-  .card-footer {
-    bottom: 12px;
+  .back-title {
+    font-size: 28px;
   }
+}
+
+/* Logo Grid */
+.logo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 220px;
+}
+
+@media (min-width: 768px) {
+  .logo-grid {
+    gap: 32px;
+    max-width: 260px;
+  }
+}
+
+.logo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-item img,
+.logo-item svg {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .logo-item img,
+  .logo-item svg {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.logo-item:hover img,
+.logo-item:hover svg {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.logo-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-light);
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* =========================================
+   Card Footer
+   ========================================= */
+.card-footer {
+  text-align: center;
 }
 
 .powered-by {
   font-family: var(--font-body);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 400;
   color: var(--text-secondary);
   letter-spacing: 0.5px;
-  opacity: 0.7;
 }
 
 @media (min-width: 768px) {
   .powered-by {
-    font-size: 9px;
+    font-size: 10px;
   }
 }
 
@@ -318,12 +509,21 @@ body {
   color: var(--text-primary);
 }
 
+/* Back side footer */
+.card-back .powered-by {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.card-back .the-lab {
+  color: var(--text-light);
+}
+
 /* =========================================
    Selection
    ========================================= */
 ::selection {
   background: var(--accent-green);
-  color: var(--bg-card);
+  color: var(--text-primary);
 }
 
 /* =========================================
