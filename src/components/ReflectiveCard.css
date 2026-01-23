@@ -18,6 +18,11 @@
   isolation: isolate;
   font-family: 'Inter', 'Montserrat', sans-serif;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Force clip on mobile Safari/iOS */
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .reflective-card-container:hover {
@@ -44,17 +49,27 @@
   opacity: 0;
 }
 
+/* Video wrapper to ensure proper clipping */
+.reflective-video-wrapper {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  z-index: 0;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
+}
+
 .reflective-video {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
   object-fit: cover;
-  transform: scale(1.3) scaleX(-1);
+  transform: translate(-50%, -50%) scaleX(-1);
   filter: saturate(var(--saturation, 0)) contrast(130%) brightness(105%) blur(var(--blur-strength, 12px))
     url(#metallic-displacement);
-  z-index: 0;
   opacity: 0.85;
   transition: filter 0.3s ease, opacity 0.3s ease;
 }
