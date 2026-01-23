@@ -1,9 +1,10 @@
 # Netlify Configuration for The Algorithm Card
 # Reset Agency - The Lab
+# React + Vite Build
 
 [build]
-  publish = "."
-  # No build command needed - static site
+  command = "npm run build"
+  publish = "dist"
 
 # Security Headers
 [[headers]]
@@ -13,21 +14,12 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+    # Allow camera for reflective card effect
+    Permissions-Policy = "camera=(self), accelerometer=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
 
 # Cache static assets
 [[headers]]
   for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/css/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/js/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
